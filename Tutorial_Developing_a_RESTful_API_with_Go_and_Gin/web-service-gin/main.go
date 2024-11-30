@@ -24,6 +24,7 @@ var albums = []album{
 func main() {
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
+	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
 
 	router.Run("localhost:8080")
@@ -34,7 +35,26 @@ func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
 
+// getAllbumByID ocates the album whose ID value matches the id
+// parameter sente by the client, then returns that album as a response.
+func getAlbumByID(c *gin.Context) {
+	id := c.Param("id")
+
+	// Loop over the list of albums, looking for
+	// an album whose ID value matches the parameter.
+	for _, a := range albums {
+		if a.ID == id {
+			c.IndentedJSON(http.StatusOK, a)
+			return
+		}
+	}
+	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+}
+
 // postAlbums adds an album from JSON received in the request body.
+// 윈도우에서는 아래 형식으로 요청
+// curl -X POST http://localhost:8080/albums -H "Content-Type: application/json" -d "{\"id\": \"6\", \"title\": \"곡 제목\", \"artist\": \"아티스트\", \"price\": 00.00}"
+
 func postAlbums(c *gin.Context) {
 	var newAlbum album
 
